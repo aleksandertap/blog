@@ -40,7 +40,9 @@ const CommentCreate = ({ postId, onCommentCreated }) => {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Add a comment"
           />
-          <button type="submit" className="btn btn-primary">Add Comment</button>
+          <button type="submit" className="btn btn-primary">
+            Add Comment
+          </button>
         </div>
       </form>
     </div>

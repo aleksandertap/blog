@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios")
 
 const app = express();
 const PORT = 5001;
@@ -40,6 +41,12 @@ app.post("/posts/:id/comments", (req, res) => {
       postId,
       comment: commentContent,
     };
+
+    axios.post("http://localhost:5005/events", {
+          type: "CommentCreated",
+        }).catch((error) => {
+          console.log(error);
+        })
     
     postComments.push(comment);
     res.status(201).json({ comment: comment, message: "Comment added successfully" });
@@ -50,6 +57,10 @@ app.post("/posts/:id/comments", (req, res) => {
   }
 });
 
+app.post("/events", (req, res) => {
+  console.log("recieved event: ", req.body);
+  res.json({});
+});
 
 app.listen(PORT, () => {
   console.log(`Comment Service is running on http://localhost:${PORT}`);
