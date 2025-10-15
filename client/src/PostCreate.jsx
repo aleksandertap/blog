@@ -34,14 +34,14 @@ const PostCreate = ({ onPostCreated }) => {
     return (
         <div>
             <h1>Add post</h1>
-            <form onSubmit={createPost}>
+            <form onSubmit={createPost} className='d-flex flex-lg-column'>
                 <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Post title"
                 />
-                <button type="submit">Add Post</button>
+                <button type="submit" className="btn btn-primary">Add Post</button>
             </form>
         </div>
     );

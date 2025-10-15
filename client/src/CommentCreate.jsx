@@ -9,7 +9,7 @@ const CommentCreate = ({ postId, onCommentCreated }) => {
     if (!content.trim()) return;
 
     const response = await fetch(
-      `http://localhost:5001/comments/${postId}`,
+      `http://localhost:5001/posts/${postId}/comments`,
       {
         method: "POST",
         headers: {
@@ -40,7 +40,7 @@ const CommentCreate = ({ postId, onCommentCreated }) => {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Add a comment"
           />
-          <button type="submit">Add Comment</button>
+          <button type="submit" className="btn btn-primary">Add Comment</button>
         </div>
       </form>
     </div>

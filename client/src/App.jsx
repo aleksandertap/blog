@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PostCreate from "./PostCreate";
 import PostList from "./PostList";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [posts, setPosts] = useState({});

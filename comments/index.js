@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.get("/comments/:id", (req, res) => {
+app.get("/posts/:id/comments", (req, res) => {
   try {
     const postId = req.params.id;
     
@@ -26,7 +26,7 @@ app.get("/comments/:id", (req, res) => {
   }
 });
 
-app.post("/comments/:id", (req, res) => {
+app.post("/posts/:id/comments", (req, res) => {
   try {
     const postId = req.params.id;
     const commentContent = req.body.comment;

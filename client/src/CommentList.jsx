@@ -6,7 +6,7 @@ const CommentList = ({ postId, refreshKey }) => {
   const fetchComments = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5001/comments/${postId}`
+        `http://localhost:5001/posts/${postId}/comments`
       );
       const data = await response.json();
 
@@ -29,7 +29,7 @@ const CommentList = ({ postId, refreshKey }) => {
 
   return (
     <div style={{ paddingLeft: '15px' }}>
-      <h6>Comments</h6>
+      <h6>{comments.length} Comments</h6>
       {renderedComments}
     </div>
   );
