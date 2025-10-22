@@ -40,6 +40,7 @@ app.post("/posts/:id/comments", (req, res) => {
       id: (postComments.length + 1).toString(), 
       postId,
       content: commentContent,
+      status: "pending"
     };
 
     axios.post("http://localhost:5005/events", {
@@ -59,7 +60,26 @@ app.post("/posts/:id/comments", (req, res) => {
 });
 
 app.post("/events", (req, res) => {
-  res.json({});
+
+  const { type, data } = req.body;
+
+  if (type === "CommentModerated") {
+    const { postId, id, status, content } = data;
+    const comment = postComments.find((c) => c.id === id && c.postId === postId);
+    comment.status = status;
+
+    axios.post("http://localhost:5005/events", {
+      type: "CommentUpdated",
+      data: {
+        id,
+        status,
+        postId,
+        content,
+      },
+    });
+  }
+
+  res.send({});
 });
 
 app.listen(PORT, () => {
