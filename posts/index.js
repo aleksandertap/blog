@@ -26,6 +26,7 @@ app.post("/posts", (req, res) => {
  
     axios.post("http://localhost:5005/events", {
       type: "PostCreated",
+      data: post,
     }).catch((error) => {
       console.log(error);
     })
@@ -37,7 +38,6 @@ app.post("/posts", (req, res) => {
 });
 
 app.post("/events", (req, res) => {
-  console.log("recieved event: ", req.body);
   res.json({});
 });
 

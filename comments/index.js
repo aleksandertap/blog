@@ -39,11 +39,12 @@ app.post("/posts/:id/comments", (req, res) => {
     const comment = {
       id: (postComments.length + 1).toString(), 
       postId,
-      comment: commentContent,
+      content: commentContent,
     };
 
     axios.post("http://localhost:5005/events", {
           type: "CommentCreated",
+          data: comment,
         }).catch((error) => {
           console.log(error);
         })
@@ -58,7 +59,6 @@ app.post("/posts/:id/comments", (req, res) => {
 });
 
 app.post("/events", (req, res) => {
-  console.log("recieved event: ", req.body);
   res.json({});
 });
 

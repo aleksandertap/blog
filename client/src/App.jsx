@@ -4,20 +4,15 @@ import PostList from "./PostList";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  const [posts, setPosts] = useState({});
+  const [posts, setPosts] = useState([]);
+
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/posts");
-      const data = await res.json();
-      const postsArray = data.posts || [];
+      const res = await fetch("http://localhost:5002/posts");
+      const posts = await res.json();
 
-      const postsObject = postsArray.reduce((acc, post) => {
-        acc[post.id] = post;
-        return acc;
-      }, {});
-
-      setPosts(postsObject);
+      setPosts(posts);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
     }

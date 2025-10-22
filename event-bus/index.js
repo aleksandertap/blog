@@ -7,13 +7,17 @@ app.use(express.json());
 app.post("/events", (req, res) => {
   try {
     const event = req.body;
-    console.log("event created:", event.type);
+    console.log("Recieved event:", event.type);
 
     axios.post(`http://localhost:5000/events`, event).catch((error) => {
       console.log(error);
     });
 
     axios.post(`http://localhost:5001/events`, event).catch((error) => {
+      console.log(error);
+    });
+
+    axios.post(`http://localhost:5002/events`, event).catch((error) => {
       console.log(error);
     });
 
