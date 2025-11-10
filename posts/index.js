@@ -24,7 +24,7 @@ app.post("/posts", (req, res) => {
     };
     posts.push(post);
  
-    axios.post("http://localhost:5005/events", {
+    axios.post("http://event-bus-service:5005/events", {
       type: "PostCreated",
       data: post,
     }).catch((error) => {

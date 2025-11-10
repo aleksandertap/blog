@@ -43,7 +43,7 @@ app.post("/posts/:id/comments", (req, res) => {
       status: "pending"
     };
 
-    axios.post("http://localhost:5005/events", {
+    axios.post("http://event-bus-service:5005/events", {
           type: "CommentCreated",
           data: comment,
         }).catch((error) => {
@@ -68,7 +68,7 @@ app.post("/events", (req, res) => {
     const comment = postComments.find((c) => c.id === id && c.postId === postId);
     comment.status = status;
 
-    axios.post("http://localhost:5005/events", {
+    axios.post("http://event-bus-service:5005/events", {
       type: "CommentUpdated",
       data: {
         id,

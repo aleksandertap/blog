@@ -9,19 +9,19 @@ app.post("/events", (req, res) => {
     const event = req.body;
     console.log("Recieved event:", event.type);
 
-    axios.post(`http://localhost:5000/events`, event).catch((error) => {
+    axios.post(`http://posts:5000/events`, event).catch((error) => {
       console.log(error);
     });
 
-    axios.post(`http://localhost:5001/events`, event).catch((error) => {
+    axios.post(`http://comments:5001/events`, event).catch((error) => {
       console.log(error);
     });
 
-    axios.post(`http://localhost:5002/events`, event).catch((error) => {
+    axios.post(`http://query:5002/events`, event).catch((error) => {
       console.log(error);
     });
 
-    axios.post(`http://localhost:5003/events`, event).catch((error) => {
+    axios.post(`http://moderation:5003/events`, event).catch((error) => {
       console.log(error);
     });
 
