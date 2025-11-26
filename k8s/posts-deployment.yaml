@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: posts
-          image: posts:latest
+          image: aleksandertapsi/posts:latest
           ports:
             - containerPort: 5000
 ---
@@ -23,6 +23,7 @@ kind: Service
 metadata:
   name: posts-service
 spec:
+  type: NodePort
   selector:
     app: posts
   ports:

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: comments
-          image: comments:latest
+          image: aleksandertapsi/comments:latest
           ports:
             - containerPort: 5001
 ---
@@ -23,6 +23,7 @@ kind: Service
 metadata:
   name: comments-service
 spec:
+  type: NodePort
   selector:
     app: comments
   ports:

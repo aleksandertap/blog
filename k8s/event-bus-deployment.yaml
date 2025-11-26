@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: event-bus
-          image: event-bus:latest
+          image: aleksandertapsi/event-bus:latest
           ports:
             - containerPort: 5005
 ---
@@ -23,6 +23,7 @@ kind: Service
 metadata:
   name: event-bus-service
 spec:
+  type: NodePort
   selector:
     app: event-bus
   ports:
