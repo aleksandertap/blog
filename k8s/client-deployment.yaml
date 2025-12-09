@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: posts-deployment
+  name: client-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: posts
+      app: client
   template:
     metadata:
       labels:
-        app: posts
+        app: client
     spec:
       containers:
-        - name: posts
-          image: aleksandertapsi/posts:latest
+        - name: client
+          image: aleksandertapsi/client:latest
           ports:
-            - containerPort: 5000
+            - containerPort: 5173
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: posts-service
+  name: client-service
 spec:
   selector:
-    app: posts
+    app: client
   ports:
-    - name: posts
+    - name: client
       protocol: TCP
-      port: 5000
-      targetPort: 5000
+      port: 5173
+      targetPort: 5173

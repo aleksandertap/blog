@@ -9,7 +9,7 @@ const CommentCreate = ({ postId, onCommentCreated }) => {
     if (!content.trim()) return;
 
     const response = await fetch(
-      `http://localhost:5001/posts/${postId}/comments`,
+      `http://blog.local/posts/${postId}/comments/create`,
       {
         method: "POST",
         headers: {

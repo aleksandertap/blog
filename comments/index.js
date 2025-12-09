@@ -27,7 +27,7 @@ app.get("/posts/:id/comments", (req, res) => {
   }
 });
 
-app.post("/posts/:id/comments", (req, res) => {
+app.post("/posts/:id/comments/create", (req, res) => {
   try {
     const postId = req.params.id;
     const commentContent = req.body.comment;

@@ -14,7 +14,7 @@ app.get("/posts", (req, res) => {
   res.json({ posts: posts });
 });
 
-app.post("/posts", (req, res) => {
+app.post("/posts/create", (req, res) => {
   try {
     const title = req.body.title;
     const id = (posts.length + 1).toString();

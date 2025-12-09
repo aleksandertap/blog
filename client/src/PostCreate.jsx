@@ -9,7 +9,7 @@ const PostCreate = ({ onPostCreated }) => {
         if (!title.trim()) return;
 
         try {
-            const response = await fetch("http://localhost:5000/posts", {
+            const response = await fetch("http://blog.local/posts/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
