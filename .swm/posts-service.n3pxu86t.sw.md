@@ -190,7 +190,7 @@ Response
 {"1":{"id":"1","title":"firstpost","comments":[{"id":"1","content":"comment","status":"approved"}]}}
 ```
 
-# 6\. What's a Post Object? 📦
+# 6\. What's a Post Object? 
 
 A post is just a JavaScript object with two fields:
 
@@ -228,7 +228,7 @@ Another service is using that port. Either:
 
 ---
 
-# 8\. Testing Your Service 🧪
+# 8\. Testing Your Service 
 
 ## Using cURL (Terminal)
 
