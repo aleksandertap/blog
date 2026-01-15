@@ -9,7 +9,7 @@ function App() {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("http://blog.local/posts");
+      const res = await fetch("https://blog.local/posts");
       const posts = await res.json();
 
       setPosts(posts);

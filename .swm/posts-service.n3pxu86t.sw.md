@@ -1,7 +1,7 @@
 ---
 title: Posts Service
 ---
-# What is This Service? 🎯
+# What is This Service?
 
 The **Posts Service** is a simple backend API that lets users create and view blog posts. It's part of a bigger microservices project where different services talk to each other through events.
 
@@ -66,7 +66,7 @@ You should now see in the terminal
 >
 > Posts Service is running on <http://localhost:5000>
 
-# 3\. How Does It Work? 🔄
+# 3\. How Does It Work?&nbsp;
 
 **Simple explanation:** When someone creates a post, two things happen:
 
@@ -187,35 +187,8 @@ Method: GET
 Response
 
 ```json
-{
-    "posts": [
-        {
-            "id": "1",
-            "title": "Making first post"
-        }
-    ]
-}
+{"1":{"id":"1","title":"firstpost","comments":[{"id":"1","content":"comment","status":"approved"}]}}
 ```
-
-# 5\. Receiving Events
-
-<SwmSnippet path="/posts/index.js" line="40">
-
----
-
-This endpoint receives events from the Event Bus. Right now it doesn't do anything, but in the future it could handle events like:
-- `CommentCreated` - to update post comment counts
-- `PostModerated` - to hide/show posts based on moderation
-
-```javascript
-app.post("/events", (req, res) => {
-  res.json({});
-});
-```
-
----
-
-</SwmSnippet>
 
 # 6\. What's a Post Object? 📦
 
@@ -232,15 +205,15 @@ A post is just a JavaScript object with two fields:
 
 ---
 
-# 7\. Common Issues & Solutions 🔧
+# 7\. Common Issues & Solutions&nbsp;
 
 ## "Posts disappear when I restart!"
 
-✅ **This is normal!** The posts are only in memory (RAM), not saved to a database. When the service stops, the array is cleared.
+**This is normal!** The posts are only in memory (RAM), not saved to a database. When the service stops, the array is cleared.
 
 ## "Can't connect to Event Bus"
 
-✅ Make sure the Event Bus service is running. In Kubernetes, check with:
+Make sure the Event Bus service is running. In Kubernetes, check with:
 
 ```bash
 kubectl get pods
@@ -248,7 +221,7 @@ kubectl get pods
 
 ## "Port 5000 already in use"
 
-✅ Another service is using that port. Either:
+Another service is using that port. Either:
 
 - Stop the other service
 - Change the PORT in `index.js`
@@ -276,55 +249,27 @@ curl http://localhost:5000/posts
 ## Using Postman or Thunder Client
 
 1. **Create POST** → `http://localhost:5000/posts/create`
+
 2. **Body** → Raw → JSON:
 
    ```json
    {"title": "My awesome post"}
    ```
+
 3. **Send!**
 
----
+4. &nbsp;
 
-# 9\. Next Steps & Improvements 💡
-
-**Things you could add to learn more:**
-
-### Easy:
-
-- ✏️ Add validation (check if title is empty)
-- ✏️ Add a `GET /posts/:id` endpoint to get a single post
-- ✏️ Add timestamps to posts
-
-### Medium:
-
-- 🔨 Connect a real database (MongoDB or PostgreSQL)
-- 🔨 Add a DELETE endpoint
-- 🔨 Use UUIDs instead of simple numbers for IDs
-
-### Advanced:
-
-- 🚀 Add authentication (only logged-in users can post)
-- 🚀 Add pagination (don't return 1000 posts at once)
-- 🚀 Add proper error handling with error codes
+   ```json
+   {
+       "post": {
+           "id": "3",
+           "title": "My awesome posts"
+       },
+       "message": "Post created successfully"
+   }
+   ```
 
 ---
-
-# 10\. Key Learning Points 📚
-
-**From this service you learn:**
-
-1. **REST API basics** - GET and POST endpoints
-2. **Express.js** - How to build a web server in Node.js
-3. **Event-driven architecture** - Services communicate through events
-4. **Microservices** - Small, focused services that work together
-5. **Docker & Kubernetes** - Containerization and deployment
-6. **Async operations** - Using axios to send HTTP requests
-
-**Good practices shown:**
-
-- Using middleware (cors, express.json)
-- Error handling with try-catch
-- Separating concerns (one service = one job)
-- RESTful naming conventions
 
 <SwmMeta version="3.0.0" repo-id="Z2l0aHViJTNBJTNBYmxvZyUzQSUzQWFsZWtzYW5kZXJ0YXA=" repo-name="blog"><sup>Powered by [Swimm](https://app.swimm.io/)</sup></SwmMeta>
