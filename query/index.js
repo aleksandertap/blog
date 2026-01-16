@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const authenticateToken = require("./middleware/auth");
 
 const app = express();
 const PORT = 5002;
@@ -9,7 +10,7 @@ app.use(cors());
 
 const posts = {};
 
-app.get("/posts", (req, res) => {
+app.get("/posts", authenticateToken, (req, res) => {
   res.send(posts);
 });
 

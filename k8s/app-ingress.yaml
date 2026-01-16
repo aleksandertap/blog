@@ -17,6 +17,13 @@ spec:
     - host: blog.local
       http:
         paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: jwt-auth-service
+                port:
+                  number: 5006
           - path: /posts/create
             pathType: Prefix
             backend:

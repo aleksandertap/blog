@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jwt-auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jwt-auth
+  template:
+    metadata:
+      labels:
+        app: jwt-auth
+    spec:
+      containers:
+        - name: jwt-auth
+          image: aleksandertapsi/jwt-auth:latest
+          ports:
+            - containerPort: 5006
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jwt-auth-service
+spec:
+  selector:
+    app: jwt-auth
+  ports:
+    - name: jwt-auth
+      protocol: TCP
+      port: 5006
+      targetPort: 5006
