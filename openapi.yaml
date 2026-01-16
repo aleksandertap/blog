@@ -1,0 +1,383 @@
+openapi: 3.0.3
+info:
+  title: Blog Microservices API
+  version: 1.0.0
+  description: |
+    Mikroteenutepõhine blogirakendus, mis võimaldab kasutajatel luua postitusi ja kommentaare.
+    API kasutab JWT autentimist kaitstud endpointide jaoks ja event-driven arhitektuuri 
+    teenuste vahel. Mõeldud arendajatele ja integratsioonidele.
+  contact:
+    name: Aleksander
+    email: example@example.com
+servers:
+  - url: https://blog.local
+    description: Minikube local environment
+tags:
+  - name: Auth
+    description: Autentimine ja autoriseerimise haldamine (JWT tokenid)
+  - name: Posts
+    description: Postituste loomine ja haldamine
+  - name: Comments
+    description: Kommentaaride loomine ja vaatamine
+  - name: Query
+    description: Agregeeritud andmete päringud (postitused koos kommentaaridega)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT access token, mille saad /auth/login endpointist.
+        Swagger UI-s vajuta "Authorize" nuppu ja sisesta: Bearer <sinu_token>
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Logi sisse ja saa JWT access token
+      description: |
+        Autendib kasutaja kasutajanime ja parooli järgi. Eduka sisselogimise korral 
+        tagastab access tokeni (kehtib 15 min) ja seab httpOnly refresh_token küpsise (kehtib 7 päeva).
+        Testimiseks kasuta: username "admin", password "qwerty".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  description: Kasutajanimi
+                password:
+                  type: string
+                  format: password
+                  description: Parool
+            example:
+              username: admin
+              password: qwerty
+      responses:
+        "200":
+          description: Edukas sisselogimine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: JWT access token (kehtib 15 minutit)
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        "401":
+          description: Valed kasutajaandmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Uuenda access tokenitRefresh access token (uses refresh_token cookie)
+      description: |
+        Genereerib uue access tokeni kasutades refresh_token küpsist.
+        Vana refresh token tühistatakse ja luuakse uus (token rotation).
+        Kui refresh token on aegunud või puudub, tagastab 401.
+      responses:
+        "200":
+          description: Uus access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        "401":
+          description: Puuduv või kehtetu refresh token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Refresh token is missing
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logi välja
+      description: |
+        Tühistab refresh tokeni ja kustutab refresh_token küpsise.
+        Pärast välja logimist tuleb uuesti sisse logida, et saada uus access token.
+      responses:
+        "200":
+          description: Edukas väljalogimine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Logged out successfully
+        "400":
+          description: Juba välja logitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Already logged out (No token found)
+
+  /auth/verify:
+    post:
+      tags: [Auth]
+      summary: Kontrolli access tokeni kehtivust
+      description: |
+        Testendpoint, mis kontrollib, kas saadetud Bearer token on kehtiv.
+        Nõuab Authorization headerit: Bearer <token>.
+        Kui token on kehtiv, tagastab dekodeeritud kasutaja info.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Token on kehtiv
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      iat:
+                        type: integer
+                      exp:
+                        type: integer
+              example:
+                message: You are authorized!
+                user:
+                  username: admin
+                  iat: 1705420800
+                  exp: 1705421700
+        "401":
+          description: Token puudub või on aegunud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Access token has expired
+        "403":
+          description: Kehtetu token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Invalid access token
+
+  /posts:
+    get:
+      tags: [Query]
+      summary: Hangi kõik postitused koos kommentaaridega
+      description: |
+        Query teenus, mis tagastab agregeeritud vaate kõigist postitustest ja nende kommentaaridest.
+        See endpoint on kaitstud JWT autentimisega - pead olema sisse logitud.
+        Saamiseks: logi sisse /auth/login kaudu, kopeeri accessToken ja kasuta Authorization: Bearer <token> headerit.
+        Swagger UI-s vajuta "Authorize" nuppu ja sisesta token.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Edukas päring
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    comments:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          content:
+                            type: string
+                          status:
+                            type: string
+                            enum: [pending, approved, rejected]
+              example:
+                "abc-123":
+                  id: abc-123
+                  title: My first post
+                  comments:
+                    - id: com-456
+                      content: Great post!
+                      status: approved
+        "401":
+          description: Puuduv või kehtetu access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Access token is missing
+
+  /posts/create:
+    post:
+      tags: [Posts]
+      summary: Loo uus postitus
+      description: |
+        Loob uue postituse ja saadab PostCreated eventi event-busi kaudu.
+        Endpoint EI vaja autentimist (avalik). Tagastab loodud postituse ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  description: Postituse pealkiri
+                  minLength: 1
+            example:
+              title: My first post
+      responses:
+        "201":
+          description: Postitus edukalt loodud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+              example:
+                id: abc-123
+                title: My first post
+
+  /posts/{id}/comments:
+    get:
+      tags: [Comments]
+      summary: Hangi postituse kommentaarid (deprecated - kasuta /posts)
+      description: |
+        Legacy endpoint, mis tagastab ühe postituse kommentaarid.
+        Soovitatav on kasutada /posts endpointi, mis annab täielikuma pildi.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Postituse ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Kommentaaride nimekiri
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    content:
+                      type: string
+                    status:
+                      type: string
+              example:
+                - id: com-456
+                  content: Great post!
+                  status: approved
+    post:
+      tags: [Comments]
+      summary: Loo kommentaar postitusele
+      description: |
+        Loob uue kommentaari valitud postitusele. Saadetakse CommentCreated event.
+        Kommentaar läheb esmalt modereerimisse (status: pending), seejärel saadetakse 
+        CommentUpdated event staatuse muutusega (approved/rejected).
+        Endpoint EI vaja autentimist.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Postituse ID, millele kommentaar lisatakse
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  description: Kommentaari sisu
+                  minLength: 1
+            example:
+              content: Great post!
+      responses:
+        "201":
+          description: Kommentaar edukalt loodud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  content:
+                    type: string
+                  postId:
+                    type: string
+                  status:
+                    type: string
+              example:
+                id: com-456
+                content: Great post!
+                postId: abc-123
+                status: pending
